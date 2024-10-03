@@ -19,7 +19,7 @@ ELEMENT Elm[] =
   {5,"eee","eee@gmail.com"},
   {0,"",""}
 };
-
+static int CPTelem = 0;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -28,8 +28,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) , ui(new Ui::MainW
   ui->setupUi(this);
 
   //***** A modifier ***********************
-  setNom(Elm[1].nom);
-  setEmail(Elm[1].email);
+  setNom(Elm[0].nom);
+  setEmail(Elm[0].email);
   //****************************************
 }
 
@@ -68,18 +68,36 @@ void MainWindow::setEmail(const char* Text)
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void MainWindow::on_pushButtonSuivant_clicked()
 {
-  fprintf(stderr,"Clic sur le bouton >>>\n");
-  // TO DO
+
+  if (CPTelem < 5)
+  {
+    CPTelem +=1;
+    fprintf(stderr,"Clic sur le bouton >>>\n"); 
+    printf("L'ID est %d",Elm[CPTelem].id);
+
+    setNom(Elm[CPTelem].nom);
+    setEmail(Elm[CPTelem].email);
+  }
+
 }
 
 void MainWindow::on_pushButtonPrecedent_clicked()
 {
-  fprintf(stderr,"Clic sur le bouton <<<\n");
-  // TO DO
+
+  if (CPTelem > 1)
+  {
+    CPTelem -=1;
+    printf("Clic sur le bouton <<<\n");
+    printf("L'ID est %d",Elm[CPTelem].id);
+
+    setNom(Elm[CPTelem].nom);
+    setEmail(Elm[CPTelem].email);
+  }
+  
 }
 
 void MainWindow::on_pushButtonQuitter_clicked()
 {
   fprintf(stderr,"Clic sur le bouton Quitter\n");
-  // TO DO
+  exit(0);
 }
