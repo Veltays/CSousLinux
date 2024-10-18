@@ -1,41 +1,41 @@
 #include "mywindow.h"
 #include "ui_mywindow.h"
-
 #include "FichierUtilisateur.h"
-
+#include <iostream>
+using namespace std;
 MyWindow::MyWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MyWindow)
 {
-    ui->setupUi(this);
+  ui->setupUi(this);
 
-    // Configuration de la table des clients (ne pas modifier)
-    ui->tableWidgetClients->setColumnCount(2);
-    ui->tableWidgetClients->setRowCount(0);
-    QStringList labelsTableClients;
-    labelsTableClients << "Nom" << "Hash du mot de passe";
-    ui->tableWidgetClients->setHorizontalHeaderLabels(labelsTableClients);
-    ui->tableWidgetClients->setSelectionMode(QAbstractItemView::NoSelection);
-    ui->tableWidgetClients->horizontalHeader()->setVisible(true);
-    ui->tableWidgetClients->horizontalHeader()->setDefaultSectionSize(300);
-    ui->tableWidgetClients->horizontalHeader()->setStretchLastSection(true);
-    ui->tableWidgetClients->verticalHeader()->setVisible(false);
-    ui->tableWidgetClients->horizontalHeader()->setStyleSheet("background-color: lightyellow");
+  // Configuration de la table des clients (ne pas modifier)
+  ui->tableWidgetClients->setColumnCount(2);
+  ui->tableWidgetClients->setRowCount(0);
+  QStringList labelsTableClients;
+  labelsTableClients << "Nom"
+                     << "Hash du mot de passe";
+  ui->tableWidgetClients->setHorizontalHeaderLabels(labelsTableClients);
+  ui->tableWidgetClients->setSelectionMode(QAbstractItemView::NoSelection);
+  ui->tableWidgetClients->horizontalHeader()->setVisible(true);
+  ui->tableWidgetClients->horizontalHeader()->setDefaultSectionSize(300);
+  ui->tableWidgetClients->horizontalHeader()->setStretchLastSection(true);
+  ui->tableWidgetClients->verticalHeader()->setVisible(false);
+  ui->tableWidgetClients->horizontalHeader()->setStyleSheet("background-color: lightyellow");
 
-    /// Exemples d'utilisation (à supprimer)
-    setResultat(" ---- Bonjour !!! ---- ");
-    ajouteTupleTableUtilisateurs("wagner",10);
+  /// Exemples d'utilisation (à supprimer)
+
 }
 
 MyWindow::~MyWindow()
 {
-    delete ui;
+  delete ui;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///// Fonctions utiles : ne pas modifier /////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void MyWindow::setNom(const char* Text)
+void MyWindow::setNom(const char *Text)
 {
-  if (strlen(Text) == 0 )
+  if (strlen(Text) == 0)
   {
     ui->lineEditNom->clear();
     return;
@@ -44,16 +44,16 @@ void MyWindow::setNom(const char* Text)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const char* MyWindow::getNom()
+const char *MyWindow::getNom()
 {
-  strcpy(_nom,ui->lineEditNom->text().toStdString().c_str());
+  strcpy(_nom, ui->lineEditNom->text().toStdString().c_str());
   return _nom;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void MyWindow::setMotDePasse(const char* Text)
+void MyWindow::setMotDePasse(const char *Text)
 {
-  if (strlen(Text) == 0 )
+  if (strlen(Text) == 0)
   {
     ui->lineEditMotDePasse->clear();
     return;
@@ -62,23 +62,24 @@ void MyWindow::setMotDePasse(const char* Text)
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-const char* MyWindow::getMotDePasse()
+const char *MyWindow::getMotDePasse()
 {
-  strcpy(_motDePasse,ui->lineEditMotDePasse->text().toStdString().c_str());
+  strcpy(_motDePasse, ui->lineEditMotDePasse->text().toStdString().c_str());
   return _motDePasse;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 int MyWindow::isNouveauChecked()
 {
-  if (ui->checkBoxNouveau->isChecked()) return 1;
+  if (ui->checkBoxNouveau->isChecked())
+    return 1;
   return 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void MyWindow::setResultat(const char* Text)
+void MyWindow::setResultat(const char *Text)
 {
-  if (strlen(Text) == 0 )
+  if (strlen(Text) == 0)
   {
     ui->lineEditResultat->clear();
     return;
@@ -89,38 +90,38 @@ void MyWindow::setResultat(const char* Text)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///// Fonctions utiles Table des utilisateurs (ne pas modifier) //////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-void MyWindow::ajouteTupleTableUtilisateurs(const char* nom,int hash)
+void MyWindow::ajouteTupleTableUtilisateurs(const char *nom, int hash)
 {
-    char Hash[20];
-    sprintf(Hash,"%d",hash);
+  char Hash[20];
+  sprintf(Hash, "%d", hash);
 
-    // Ajout
-    int nbLignes = ui->tableWidgetClients->rowCount();
-    nbLignes++;
-    ui->tableWidgetClients->setRowCount(nbLignes);
-    ui->tableWidgetClients->setRowHeight(nbLignes-1,10);
+  // Ajout
+  int nbLignes = ui->tableWidgetClients->rowCount();
+  nbLignes++;
+  ui->tableWidgetClients->setRowCount(nbLignes);
+  ui->tableWidgetClients->setRowHeight(nbLignes - 1, 10);
 
-    QTableWidgetItem *item = new QTableWidgetItem;
-    auto flags = item->flags();
-    flags.setFlag(Qt::ItemIsEditable, false).setFlag(Qt::ItemIsSelectable, false);
-    item->setFlags(flags);
-    item->setTextAlignment(Qt::AlignCenter);
-    item->setText(nom);
-    ui->tableWidgetClients->setItem(nbLignes-1,0,item);
+  QTableWidgetItem *item = new QTableWidgetItem;
+  auto flags = item->flags();
+  flags.setFlag(Qt::ItemIsEditable, false).setFlag(Qt::ItemIsSelectable, false);
+  item->setFlags(flags);
+  item->setTextAlignment(Qt::AlignCenter);
+  item->setText(nom);
+  ui->tableWidgetClients->setItem(nbLignes - 1, 0, item);
 
-    item = new QTableWidgetItem;
-    flags = item->flags();
-    flags.setFlag(Qt::ItemIsEditable, false).setFlag(Qt::ItemIsSelectable, false);
-    item->setFlags(flags);
-    item->setTextAlignment(Qt::AlignCenter);
-    item->setText(Hash);
-    ui->tableWidgetClients->setItem(nbLignes-1,1,item);
+  item = new QTableWidgetItem;
+  flags = item->flags();
+  flags.setFlag(Qt::ItemIsEditable, false).setFlag(Qt::ItemIsSelectable, false);
+  item->setFlags(flags);
+  item->setTextAlignment(Qt::AlignCenter);
+  item->setText(Hash);
+  ui->tableWidgetClients->setItem(nbLignes - 1, 1, item);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void MyWindow::videTableUtilisateurs()
 {
-    ui->tableWidgetClients->setRowCount(0);
+  ui->tableWidgetClients->setRowCount(0);
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -129,19 +130,57 @@ void MyWindow::videTableUtilisateurs()
 void MyWindow::on_pushButtonLogin_clicked()
 {
   // Récupération nom et mot de passe
-  char nom[20],motDePasse[20];
+  char nom[20], motDePasse[20];
   int nouvelUtilisateur;
-  strcpy(nom,getNom());
-  strcpy(motDePasse,getMotDePasse());
+  strcpy(nom, getNom());
+  strcpy(motDePasse, getMotDePasse());
   nouvelUtilisateur = isNouveauChecked();
 
   // TO DO
-  printf("Clic sur bouton LOGIN : --%s--%s--%d--\n",nom,motDePasse,nouvelUtilisateur);
+  if (isNouveauChecked())
+  {
+    if(estPresent(nom))
+      setResultat("Il existe déja");
+    else
+      ajouteUtilisateur(nom, motDePasse);
+
+    printf("Clic sur bouton LOGIN : --%s--%s--%d--\n", nom, motDePasse, nouvelUtilisateur);
+  }
+  else
+  {
+    int posi = estPresent(nom);
+    if (posi == 1)
+    {
+      int verif = verifieMotDePasse(posi, motDePasse);
+      if(verif == 0)
+        setResultat("Mot de passe incorrect");
+      else
+        setResultat("Bonjour");
+    }
+    if (posi == 0)
+      setResultat("Pas trouvé");
+    if (posi == -1)
+      setResultat("Erreur");
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void MyWindow::on_pushButtonAfficheFichier_clicked()
 {
-  // TO DO
+  videTableUtilisateurs();
+  int i = 0;
+  UTILISATEUR v[50];
+  
   printf("Clic sur bouton AFFICHER\n");
+
+  int cpt = listeUtilisateurs(v);
+  cout << "vous avez " << cpt << "utilisateur" << endl;
+
+  while (i < cpt)
+  {
+    ajouteTupleTableUtilisateurs(v[i].nom, v[i].hash);
+    i++;
+  };
+
+
 }
