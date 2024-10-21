@@ -16,11 +16,13 @@ int estPresent(const char *nom)
   while (read(fd, &temp, sizeof(UTILISATEUR)) > 0){
     if (strcmp(temp.nom, nom) == 0){
         close(fd);
+        cout << "return posi" << posi << endl;
         return posi;
       }
     posi++;
   }
   close(fd);
+  cout << "return 0" << endl;
   return 0;
 }
 
@@ -45,8 +47,12 @@ void ajouteUtilisateur(const char *nom, const char *motDePasse)
   if ((fd = open(FICHIER_UTILISATEURS, O_WRONLY | O_CREAT | O_APPEND, 0777)) == -1)
   {
     cerr << "Une erreur lors de l'ouverture du fichier est survenue lors de l'ajout du fichier" << endl;
-    exit(0);
+    return;
   }
+   if (nom == nullptr || motDePasse == nullptr) {
+        cerr << "Le nom ou le mot de passe ne peut pas être null" << endl;
+        return;  
+    }
 
   strcpy(temp.nom, nom);
   temp.hash = Hash(motDePasse);

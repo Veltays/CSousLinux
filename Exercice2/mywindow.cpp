@@ -159,19 +159,19 @@ void MyWindow::on_pushButtonLogin_clicked()
   {
     switch ((posi = estPresent(nom)))
     {
-      case 1:
-        if (verifieMotDePasse(posi, motDePasse) == 0)
-          setResultat("Mot de passe incorrect");
-        else
-          setResultat("Bonjour");
-        break;
-
       case 0:
         setResultat("Pas trouver");
         break;
 
       case -1:
         setResultat("Erreur");
+        break;
+
+      default:
+        if (verifieMotDePasse(posi, motDePasse) == 0)
+          setResultat("Mot de passe incorrect");
+        else
+          setResultat("Bonjour");
         break;
     }
 
