@@ -49,10 +49,7 @@ void ajouteUtilisateur(const char *nom, const char *motDePasse)
     cerr << "Une erreur lors de l'ouverture du fichier est survenue lors de l'ajout du fichier" << endl;
     return;
   }
-   if (nom == nullptr || motDePasse == nullptr) {
-        cerr << "Le nom ou le mot de passe ne peut pas être null" << endl;
-        return;  
-    }
+
 
   strcpy(temp.nom, nom);
   temp.hash = Hash(motDePasse);

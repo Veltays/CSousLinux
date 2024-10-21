@@ -130,7 +130,7 @@ void MyWindow::on_pushButtonLogin_clicked()
 {
   // Récupération nom et mot de passe
   char nom[20], motDePasse[20];
-  int nouvelUtilisateur,posi;
+  int nouvelUtilisateur, posi;
   strcpy(nom, getNom());
   strcpy(motDePasse, getMotDePasse());
   nouvelUtilisateur = isNouveauChecked();
@@ -143,12 +143,23 @@ void MyWindow::on_pushButtonLogin_clicked()
     switch (estPresent(nom))
     {
     case -1:
-      setResultat("création du fichier");
-      ajouteUtilisateur(nom, motDePasse);
+      if (strlen(nom) == 0|| strlen(motDePasse) == 0) 
+        setResultat("Le nom ou le mot de passe ne peut pas être null");
+      else
+      {
+        setResultat("création du fichier");
+        ajouteUtilisateur(nom, motDePasse);
+      }
       break;
     case 0:
-      setResultat("ajout d'un utilisateur");
-      ajouteUtilisateur(nom, motDePasse);
+      if (strlen(nom) == 0|| strlen(motDePasse) == 0) 
+        setResultat("Le nom ou le mot de passe ne peut pas être null");
+      else
+      {
+        setResultat("ajout d'un utilisateur");
+        ajouteUtilisateur(nom, motDePasse);
+      }
+
       break;
     default:
       setResultat("Il existe déja");
@@ -159,22 +170,21 @@ void MyWindow::on_pushButtonLogin_clicked()
   {
     switch ((posi = estPresent(nom)))
     {
-      case 0:
-        setResultat("Pas trouver");
-        break;
+    case 0:
+      setResultat("Pas trouver");
+      break;
 
-      case -1:
-        setResultat("Erreur");
-        break;
+    case -1:
+      setResultat("Erreur");
+      break;
 
-      default:
-        if (verifieMotDePasse(posi, motDePasse) == 0)
-          setResultat("Mot de passe incorrect");
-        else
-          setResultat("Bonjour");
-        break;
+    default:
+      if (verifieMotDePasse(posi, motDePasse) == 0)
+        setResultat("Mot de passe incorrect");
+      else
+        setResultat("Bonjour");
+      break;
     }
-
   }
 }
 
@@ -184,13 +194,12 @@ void MyWindow::on_pushButtonAfficheFichier_clicked()
   printf("Clic sur bouton AFFICHER\n");
   videTableUtilisateurs();
 
-  int i = 0,cpt;
+  int i = 0, cpt;
   UTILISATEUR v[50];
-
 
   if ((cpt = listeUtilisateurs(v)) == -1)
     setResultat("rien a affiché");
   else
-    for(i = 0; i<cpt ; i++) 
+    for (i = 0; i < cpt; i++)
       ajouteTupleTableUtilisateurs(v[i].nom, v[i].hash);
 }
