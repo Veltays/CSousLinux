@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <unistd.h>
+#include <stdio.h>
+#include <fcntl.h>
 #include <sys/wait.h>
 #include <sys/types.h>
 using namespace std;
@@ -142,8 +144,20 @@ const char *MainWindowEx3::getGroupe3()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void MainWindowEx3::on_pushButtonLancerRecherche_clicked()
 {
+  int fTrace = open("Trace.log", O_WRONLY | O_CREAT | O_APPEND, 0777);
+  if (fTrace == -1)
+  {
+    perror("Erreur lors de l'ouverture du fichier");
+    exit(0);
+  }
+  if (dup2(fTrace, STDERR_FILENO) == -1)
+  {
+    perror("Erreur lors de la redirection de stderr");
+    exit(0);
+  }
+
   fprintf(stderr, "Clic sur le bouton Lancer Recherche\n");
-  int idFils1 =, idFils2, idFils3;
+  int idFils1, idFils2, idFils3;
   int status;
   int x;
   int cpt = 0;
@@ -151,6 +165,7 @@ void MainWindowEx3::on_pushButtonLancerRecherche_clicked()
   if (recherche1Selectionnee())     //SI le bouton 1 est selectionner
   {
     idFils1 = fork();               //creation du clone appeler IdFils1
+    cout << "creation du premier fils" << endl;
     if (idFils1 == 0)
     {
       cout << "Voici le PID l'enfant 1 - " << getpid() << endl
@@ -159,6 +174,7 @@ void MainWindowEx3::on_pushButtonLancerRecherche_clicked()
                                                          //"./Lecture" correspond au fichier a lancer, tandis que "Lecture" et "g2202" sont les argument a lancer dans le bash pour recuperer lancer la recherche, "NULL" signifie la fin des arg
     } 
     cpt++;  //on incrémente le compteur de processus, afin de savoir combien de wait attendre
+    exit();
   }
 
 
@@ -166,12 +182,14 @@ void MainWindowEx3::on_pushButtonLancerRecherche_clicked()
   if (recherche2Selectionnee())
   {
     idFils2 = fork();
+    cout << "creation du deuxieme fils"<< endl;
     if (idFils2 == 0)
     {
       cout << "Voici le PID l'enfant 2 - " << getpid() << endl
            << "Voici la PPID du père - " << getppid() << endl;
       execl("./Lecture", "Lecture", getGroupe2(), NULL);    }
     cpt++;
+     exit();
   }
 
 
@@ -179,17 +197,20 @@ void MainWindowEx3::on_pushButtonLancerRecherche_clicked()
   if (recherche3Selectionnee())
   {
     idFils3 = fork();
+    cout << "creation du troisième fils"<< endl;
     if (idFils3 == 0)
     {
       cout << "Voici le PID l'enfant 3 - " << getpid() << endl
            << "Voici la PPID du père - " << getppid() << endl;
       execl("./Lecture", "Lecture", getGroupe3(), NULL);  }
     cpt++;
+     exit();
   }
 
   for (int i = 0; i < cpt; i++)   //on va boucler xfois le nombre de processus crée 
   {
     x = wait(&status);            //on attend de recevoir le message de fin du fils
+    cout << i <<"fils mort "<< endl;
     if (WIFEXITED(status)) //permet de tester si on a bien recu une valeur a l'exit
     {
       if (x == idFils1)           //on verifie le qu'elle est mort
@@ -206,6 +227,9 @@ void MainWindowEx3::on_pushButtonLancerRecherche_clicked()
       }
     }
   }
+
+
+  ::close(fTrace);        //conflit avec la bibliotheque qwidget
 }
 
 
