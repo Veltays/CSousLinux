@@ -25,4 +25,4 @@ moc_mainwindowtraitement.o: moc_mainwindowtraitement.cpp ui_mainwindowtraitement
 	g++ -c -pipe -g -std=gnu++11 -Wall -W -D_REENTRANT -fPIC -DQT_DEPRECATED_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -I. -isystem /usr/include/qt5 -isystem /usr/include/qt5/QtWidgets -isystem /usr/include/qt5/QtGui -isystem /usr/include/qt5/QtCore -I. -I. -I/usr/lib64/qt5/mkspecs/linux-g++ -o moc_mainwindowtraitement.o moc_mainwindowtraitement.cpp
 
 clean:
-	rm -f *.o Traitement UNIX_Exercice4
+	rm -f *.o Traitement UNIX_Exercice4 Trace.log

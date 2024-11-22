@@ -14,10 +14,10 @@ using namespace std;
 
 extern MainWindowEx4 *w;
 
-int idFils1, idFils2, idFils3;
+int idFils1, idFils2, idFils3;                        //Declaration de mes variable qui vont contenir le pid de tout les fils
 // TO DO : HandlerSIGCHLD
-void HandlerSIGCHLD(int sig);
-
+void HandlerSIGCHLD(int sig);                     //Declaration de ma fonction
+           
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -33,9 +33,9 @@ MainWindowEx4::MainWindowEx4(QWidget *parent) : QMainWindow(parent), ui(new Ui::
   sigemptyset(&Armer.sa_mask);        // Aucun masque
   Armer.sa_flags = 0;                 // Pas d'options spécifiques
 
-  // Armement du signal SIGCHLD
-  if (sigaction(SIGCHLD, &Armer, NULL) == -1) {
-      perror("Erreur lors de sigaction");
+  // Armement du signal SIGCHLD                                                    //Ici armement de ma structure SIgACTION qui va dcp recuper le SIGCHLD ( de base il est le signal qui indique la mort d'un fils, désormais on va le detourner pour s'en servir inteliggement)
+  if (sigaction(SIGCHLD, &Armer, NULL) == -1) {                                    //Liaison entre SIGCHLD et ma structure &armer
+      perror("Erreur lors de sigaction"); 
       exit(EXIT_FAILURE);
 }
 
@@ -186,9 +186,9 @@ void MainWindowEx4::on_pushButtonDemarrerTraitements_clicked()
   }
 
 
-  fprintf(stderr, "Clic sur le bouton Demarrer Traitements\n");
+  fprintf(stderr, "Clic sur le bouton Demarrer Traitements\n");                   
 
-  if (traitement1Selectionne())
+  if (traitement1Selectionne())                                        //si le bouton traitement est selectionner alors on execute ce bout de code
   {
     cout << "Traitement  1 select" << endl;
     idFils1 = fork();
@@ -196,7 +196,7 @@ void MainWindowEx4::on_pushButtonDemarrerTraitements_clicked()
     {
       cout << "le fils 1 a bien été crée voici son pid" << getpid() << endl <<
       "voici celui du père " << getppid() << endl;
-      execl("./Traitement","Traitement", getGroupe1(), "200", NULL);
+      execl("./Traitement","Traitement", getGroupe1(), "200", NULL);         //ici on utilise le excl qui va transformer le processus cloner et lui faire exécuté le programme ./Traitement en lui envoyant les parametre suivant, "Traitement" "LE nom du groupe donc (g2201,g2202,g2203) " la taille et NULL pour dire qu'il n'y a plus d'agument 
       perror("Erreur de execl");
       exit(1);
     }
@@ -252,7 +252,7 @@ void MainWindowEx4::on_pushButtonQuitter_clicked()
 void MainWindowEx4::on_pushButtonAnnuler1_clicked()
 {
   fprintf(stderr, "Clic sur le bouton Annuler1\n");
-  kill(idFils1,SIGUSR1);
+  kill(idFils1,SIGUSR1);           //On va appeler SIGUSER de mon mainwondiwo traitement ce qui stopper le processus et dcp nous renvoyer un signal de type sigCHILD qui activer notre handler sigchild (kill -2 idFIls1)
 }
 
 void MainWindowEx4::on_pushButtonAnnuler2_clicked()
@@ -278,14 +278,14 @@ void MainWindowEx4::on_pushButtonAnnulerTous_clicked()
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 // TO DO : HandlerSIGCHLD
-void HandlerSIGCHLD(int sig){
+void HandlerSIGCHLD(int sig){                                   //Ici on va arriver uniquement quand un processus de mainwndowsTraitement est mort, on rentrera donc ici dès qu'un fils meurt pour attendre de recevoir le message d emort
   int status;
-  int x = wait(&status);
+  int x = wait(&status);                                        //Statut va recevoir les donner de la mort et x va recevoir le pid de l'enfant mort
   cout <<"fils mort signal recu " << sig << endl;
 
-  
+   
     if(x == idFils1)
-      w->setResultat1(WEXITSTATUS(status));
+      w->setResultat1(WEXITSTATUS(status));                  // en fonction du fils mort on va cette le resultat
   
     if(x == idFils2)
       w->setResultat2(WEXITSTATUS(status));
