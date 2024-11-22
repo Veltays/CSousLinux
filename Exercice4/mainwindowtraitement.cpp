@@ -13,7 +13,7 @@ MYSQL_RES  *resultat;
 MYSQL_ROW  tuple;
 
 void handlerSIGALRM(int sig);
-// TO DO : HandlerSIGUSR1
+void HandlerSIGUSR1(int s);
 
 int  compteur = 0;
 
@@ -44,7 +44,17 @@ MainWindowTraitement::MainWindowTraitement(QWidget *parent):QMainWindow(parent),
   sigaction(SIGALRM,&A,NULL);
 
   // armement de SIGUSR1
-  // TO DO
+  struct sigaction B;
+  B.sa_handler = HandlerSIGUSR1;
+  B.sa_flag = 0;
+  sigemptyset(&B.sa_mask);
+  
+  if(sigaction(SIGUSR1,&B,NULL) == -1)
+  {
+    perror(" Erreur de signaction");
+    exit(1;)
+  }
+
 
   // Demande d'envoi de SIGALRM dans 1 seconde
   alarm(1); 
@@ -101,4 +111,8 @@ void handlerSIGALRM(int sig)
   alarm(1);
 }
 
-//TO DO : HandlerSIGUSR1
+void HandlerSIGUSR1(int sig)
+{
+  
+  exit(compteur);
+}
