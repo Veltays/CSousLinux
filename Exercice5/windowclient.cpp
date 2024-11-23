@@ -8,6 +8,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <signal.h>
+#include <fcntl.h>
 
 extern WindowClient *w;
 
@@ -21,12 +22,22 @@ int idQ; // identifiant de la file de message
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 WindowClient::WindowClient(QWidget *parent):QMainWindow(parent),ui(new Ui::WindowClient)
 {
+  MESSAGE requeteC;
   ui->setupUi(this);
   setWindowTitle(nomClient);
-
+  
   // Recuperation de l'identifiant de la file de messages
   fprintf(stderr,"(CLIENT %s %d) Recuperation de l'id de la file de messages\n",nomClient,getpid());
   // TO DO (etape 2)
+  
+  if((idQ = msgget(CLE,IPC_CREAT | 0666)) == -1)
+    fprintf(stderr,"(CLIENT) Probleme lors de la connexion de la fille");
+  else
+    fprintf(stderr,"(CLIENT) la file à bien été trouver");
+
+
+  strcpy(requeteC.texte,"salut");
+  
 
   // Envoi d'une requete d'identification
   // TO DO (etape 5)
