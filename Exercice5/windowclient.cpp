@@ -108,18 +108,15 @@ void WindowClient::on_pushButtonEnvoyer_clicked()
   else
     fprintf(stderr, "(CLIENT) Le message a été envoyer avec succes\n");
   // TO DO (etapes 2, 3, 4)
-  while (1)
-  {
 
-    if ((msgrcv(idQ, &requeteC, sizeof(MESSAGE) - sizeof(long), 1, 0)) == -1)
-      fprintf(stderr, "(CLIENT) Le message n'a pas pu étre recuperer\n");
-    else
-    {
-      fprintf(stderr, "(CLIENT) Le message a pas pu étre recuperer !!! \n");
-      printf("Message reçu de (type %ld) : %s vers %d\n", requeteC.type, requeteC.texte, requeteC.expediteur);
-      setRecu(requeteC.texte);
-      break;
-    }
+  if ((msgrcv(idQ, &requeteC, sizeof(MESSAGE) - sizeof(long), 1, 0)) == -1)
+    fprintf(stderr, "(CLIENT) Le message n'a pas pu étre recuperer\n");
+  else
+  {
+    fprintf(stderr, "(CLIENT) Le message a pas pu étre recuperer !!! \n");
+    printf("Message reçu de (type %ld) : %s vers %d\n", requeteC.type, requeteC.texte, requeteC.expediteur);
+    setRecu(requeteC.texte);
+
   }
 }
 
