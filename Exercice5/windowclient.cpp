@@ -14,6 +14,9 @@ extern WindowClient *w;
 
 #include "protocole.h" // contient la cle et la structure d'un message
 
+
+void HandlerSIGUSR1(int sig)
+
 extern char nomClient[40];
 int idQ; // identifiant de la file de message
 MESSAGE requeteC;
@@ -38,7 +41,12 @@ WindowClient::WindowClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::Wi
   // TO DO (etape 5)
 
   // Armement du signal SIGUSR1
-  // TO DO (etape 4)
+  // 
+  struct sigaction A;
+
+  A.sa_handler = HandlerSIGUSR1;
+  sigemptyset(&A.sa_mask);
+  A.sa_flags = 0;
 }
 
 WindowClient::~WindowClient()
@@ -130,3 +138,7 @@ void WindowClient::on_pushButtonQuitter_clicked()
 ///// Handlers de signaux ////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // TO DO (etape 4)
+void HandlerSIGUSR1(int sig)
+{
+
+}
