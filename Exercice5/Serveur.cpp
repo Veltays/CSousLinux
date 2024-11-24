@@ -35,16 +35,18 @@ int main()
       fprintf(stderr, "(SERVEUR) Probleme lors la reception du fichier");
     else
     {
-      printf("Message reçu de (type %ld) : %s vers %d\n", requete.type, requete.texte, requete.expediteur);
+      printf("Message reçu (type %ld) : %s vers %d\n", requete.type, requete.texte, requete.expediteur);
       destinataire = requete.expediteur;
       strcpy(temp, "(Serveur)");
       strcat(temp, requete.texte);
       strcpy(requete.texte, temp);
-
       if ((msgsnd(idQ, &requete, sizeof(MESSAGE) - sizeof(long), 0)) == -1)
         fprintf(stderr, "(SERVEUR) Le message n'a pas pu étre envoyer\n");
       else
+      {
+        kill(requete.expediteur, SIGUSR1);
         fprintf(stderr, "(SERVEUR) Le message a été envoyer avec succes\n");
+      }
     }
   }
 

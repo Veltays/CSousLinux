@@ -14,8 +14,7 @@ extern WindowClient *w;
 
 #include "protocole.h" // contient la cle et la structure d'un message
 
-
-void HandlerSIGUSR1(int sig)
+void HandlerSIGUSR1(int sig);
 
 extern char nomClient[40];
 int idQ; // identifiant de la file de message
@@ -41,12 +40,17 @@ WindowClient::WindowClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::Wi
   // TO DO (etape 5)
 
   // Armement du signal SIGUSR1
-  // 
+  //
   struct sigaction A;
 
   A.sa_handler = HandlerSIGUSR1;
   sigemptyset(&A.sa_mask);
   A.sa_flags = 0;
+
+  if (sigaction(SIGUSR1, &A, NULL) == -1) {
+    perror("(CLIENT) Erreur lors de l'armement de SIGUSR1");
+    exit(1);
+}
 }
 
 WindowClient::~WindowClient()
@@ -117,15 +121,7 @@ void WindowClient::on_pushButtonEnvoyer_clicked()
     fprintf(stderr, "(CLIENT) Le message a été envoyer avec succes\n");
   // TO DO (etapes 2, 3, 4)
 
-  if ((msgrcv(idQ, &requeteC, sizeof(MESSAGE) - sizeof(long), 1, 0)) == -1)
-    fprintf(stderr, "(CLIENT) Le message n'a pas pu étre recuperer\n");
-  else
-  {
-    fprintf(stderr, "(CLIENT) Le message a pas pu étre recuperer !!! \n");
-    printf("Message reçu de (type %ld) : %s vers %d\n", requeteC.type, requeteC.texte, requeteC.expediteur);
-    setRecu(requeteC.texte);
 
-  }
 }
 
 void WindowClient::on_pushButtonQuitter_clicked()
@@ -140,5 +136,14 @@ void WindowClient::on_pushButtonQuitter_clicked()
 // TO DO (etape 4)
 void HandlerSIGUSR1(int sig)
 {
+  fprintf(stderr, "(CLIENT) ON RENTRE DANS LE HANDLER %d\n",sig);
+  if ((msgrcv(idQ, &requeteC, sizeof(MESSAGE) - sizeof(long), 1, 0)) == -1)
+    fprintf(stderr, "(CLIENT) Le message n'a pas pu étre recuperer\n");
+  else
+  {
+    fprintf(stderr, "(CLIENT) Le message a pas pu étre recuperer !!! \n");
+    printf("Message reçu de (type %ld) : %s vers %d\n", requeteC.type, requeteC.texte, requeteC.expediteur);
+    w->setRecu(requeteC.texte);
+  }
 
 }
