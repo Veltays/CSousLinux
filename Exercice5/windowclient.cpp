@@ -49,7 +49,7 @@ WindowClient::WindowClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::Wi
   sigemptyset(&A.sa_mask);
   A.sa_flags = 0;
 
-  if (sigaction(SIGUSR1, &A, NULL) == -1)
+  if ((sigaction(SIGUSR1, &A, NULL)) == -1)
   {
     perror("(CLIENT) Erreur lors de l'armement de SIGUSR1");
     exit(1);
@@ -147,11 +147,12 @@ void WindowClient::on_pushButtonQuitter_clicked()
 void HandlerSIGUSR1(int sig)
 {
   fprintf(stderr, "(CLIENT) ON RENTRE DANS LE HANDLER %d\n", sig);
-  if ((msgrcv(idQ, &requeteC, sizeof(MESSAGE) - sizeof(long), 1, 0)) == -1)
+
+  if ((msgrcv(idQ, &requeteC, sizeof(MESSAGE) - sizeof(long), 0, 0)) == -1)
     fprintf(stderr, "(CLIENT) Le message n'a pas pu étre recuperer\n");
   else
   {
-    fprintf(stderr, "(CLIENT) Le message a pas pu étre recuperer !!! \n");
+    fprintf(stderr, "(CLIENT) Le message a pu étre recuperer !!! \n");
     fprintf(stderr, "Message reçu de (type %ld) : %s vers %d\n", requeteC.type, requeteC.texte, requeteC.expediteur);
     w->setRecu(requeteC.texte);
   }

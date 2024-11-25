@@ -57,12 +57,11 @@ int main()
       requete.type = requete.expediteur;
       requete.expediteur = getpid();
 
-      if ((msgsnd(idQ, &requete, sizeof(MESSAGE) - sizeof(long), 0)) == -1)
+      if ((msgsnd(idQ, &requete, sizeof(MESSAGE)-sizeof(long), 0)) == -1)
       {
         fprintf(stderr, "(SERVEUR) Le message n'a pas pu étre envoyer\n");
         exit(1);
       }
-
       else
       {
         fprintf(stderr, "(SERVEUR) Le message a été envoyer avec succes\n");
