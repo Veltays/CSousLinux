@@ -19,6 +19,8 @@ void HandlerSIGUSR1(int sig);
 extern char nomClient[40];
 int idQ; // identifiant de la file de message
 MESSAGE requeteC;
+msqid_ds file;
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -31,7 +33,7 @@ WindowClient::WindowClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::Wi
   fprintf(stderr, "(CLIENT %s %d) Recuperation de l'id de la file de messages\n", nomClient, getpid());
   // TO DO (etape 2)
 
-  if ((idQ = msgget(CLE, IPC_CREAT | 0666)) == -1)
+  if ((idQ = msgget(CLE, 0)) == -1)
     fprintf(stderr, "(CLIENT) Probleme lors de la connexion de la fille\n");
   else
     fprintf(stderr, "(CLIENT) la file à bien été trouver \n");
@@ -47,10 +49,11 @@ WindowClient::WindowClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::Wi
   sigemptyset(&A.sa_mask);
   A.sa_flags = 0;
 
-  if (sigaction(SIGUSR1, &A, NULL) == -1) {
+  if (sigaction(SIGUSR1, &A, NULL) == -1)
+  {
     perror("(CLIENT) Erreur lors de l'armement de SIGUSR1");
     exit(1);
-}
+  }
 }
 
 WindowClient::~WindowClient()
@@ -103,6 +106,7 @@ const char *WindowClient::getRecu()
   return NULL;
 }
 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///// Fonctions clics sur les boutons ////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -120,30 +124,35 @@ void WindowClient::on_pushButtonEnvoyer_clicked()
   else
     fprintf(stderr, "(CLIENT) Le message a été envoyer avec succes\n");
   // TO DO (etapes 2, 3, 4)
-
-
 }
 
 void WindowClient::on_pushButtonQuitter_clicked()
 {
   fprintf(stderr, "Clic sur le bouton Quitter\n");
+  if ((msgctl(idQ, IPC_RMID, &file)) == -1)
+    fprintf(stderr, "(CIENT) Le serveur N'A PAS bien été fermer");
+  else
+    fprintf(stderr, "(CIENT) Le serveur à bien été fermer");
   exit(1);
 }
+
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///// Handlers de signaux ////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // TO DO (etape 4)
+
+
 void HandlerSIGUSR1(int sig)
 {
-  fprintf(stderr, "(CLIENT) ON RENTRE DANS LE HANDLER %d\n",sig);
+  fprintf(stderr, "(CLIENT) ON RENTRE DANS LE HANDLER %d\n", sig);
   if ((msgrcv(idQ, &requeteC, sizeof(MESSAGE) - sizeof(long), 1, 0)) == -1)
     fprintf(stderr, "(CLIENT) Le message n'a pas pu étre recuperer\n");
   else
   {
     fprintf(stderr, "(CLIENT) Le message a pas pu étre recuperer !!! \n");
-    printf("Message reçu de (type %ld) : %s vers %d\n", requeteC.type, requeteC.texte, requeteC.expediteur);
+    fprintf(stderr, "Message reçu de (type %ld) : %s vers %d\n", requeteC.type, requeteC.texte, requeteC.expediteur);
     w->setRecu(requeteC.texte);
   }
-
 }

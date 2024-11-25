@@ -7,15 +7,17 @@
 #include "protocole.h" // contient la cle et la structure d'un message
 #include <fcntl.h>
 #include <string.h>
+#include <unistd.h>
 
 int idQ;
 int pid1, pid2;
+
+char *concatServeur(char *);
 
 int main()
 {
   MESSAGE requete;
   pid_t destinataire;
-  char temp[80];
 
   // Armement du signal SIGINT
   // TO DO (etape 6)
@@ -29,43 +31,45 @@ int main()
   else
     fprintf(stderr, "(SERVEUR) la fille à bien été créer");
 
-  while (strcmp(requete.texte, "stop") != 0)
-  {
-    if ((msgrcv(idQ, &requete, sizeof(MESSAGE) - sizeof(long), 1, 0)) == -1)
-      fprintf(stderr, "(SERVEUR) Probleme lors la reception du fichier");
-    else
-    {
-      printf("Message reçu (type %ld) : %s vers %d\n", requete.type, requete.texte, requete.expediteur);
-      destinataire = requete.expediteur;
-      strcpy(temp, "(Serveur)");
-      strcat(temp, requete.texte);
-      strcpy(requete.texte, temp);
-      if ((msgsnd(idQ, &requete, sizeof(MESSAGE) - sizeof(long), 0)) == -1)
-        fprintf(stderr, "(SERVEUR) Le message n'a pas pu étre envoyer\n");
-      else
-      {
-        kill(requete.expediteur, SIGUSR1);
-        fprintf(stderr, "(SERVEUR) Le message a été envoyer avec succes\n");
-      }
-    }
-  }
-
-  fprintf(stderr, "(SERVEUR) Le serveur s'arrete belle et bien");
-
   // Attente de connection de 2 clients
   fprintf(stderr, "(SERVEUR) Attente de connection d'un premier client...\n");
   // TO DO (etape 5)
   fprintf(stderr, "(SERVEUR) Attente de connection d'un second client...\n");
   // TO DO (etape 5)
 
-  //while(1)
+  while (1)
   {
     // TO DO (etapes 3, 4 et 5)
     fprintf(stderr, "(SERVEUR) Attente d'une requete...\n");
 
-    fprintf(stderr, "(SERVEUR) Requete recue de %d : --%s--\n", requete.expediteur, requete.texte);
+    if ((msgrcv(idQ, &requete, sizeof(MESSAGE) - sizeof(long), 1, 0)) == -1)
+    {
+      fprintf(stderr, "(SERVEUR) Probleme lors la reception du fichier");
+      exit(0);
+    }
+    else
+    {
+      printf("Message reçu (type %ld) : %s vers %d\n", requete.type, requete.texte, requete.expediteur);
 
-    fprintf(stderr, "(SERVEUR) Envoi de la reponse a %d\n", destinataire);
+      fprintf(stderr, "(SERVEUR) Envoi de la reponse a %d\n", requete.expediteur); // envoie de le réponse
+
+      strcpy(requete.texte, concatServeur(requete.texte));
+      requete.type = requete.expediteur;
+      requete.expediteur = getpid();
+
+      if ((msgsnd(idQ, &requete, sizeof(MESSAGE) - sizeof(long), 0)) == -1)
+      {
+        fprintf(stderr, "(SERVEUR) Le message n'a pas pu étre envoyer\n");
+        exit(1);
+      }
+
+      else
+      {
+        fprintf(stderr, "(SERVEUR) Le message a été envoyer avec succes\n");
+        kill(requete.type, SIGUSR1);
+        sleep(1);
+      }
+    }
   }
 }
 
@@ -73,3 +77,12 @@ int main()
 ///// Handlers de signaux ////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // TO DO (etape 6)
+
+char *concatServeur(char *texte)
+{
+  char temp[80];
+  strcpy(temp, "(Serveur)");
+  strcat(temp, texte);
+  strcpy(texte, temp);
+  return texte;
+}
