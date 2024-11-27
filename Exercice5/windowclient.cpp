@@ -28,21 +28,34 @@ WindowClient::WindowClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::Wi
 {
   ui->setupUi(this);
   setWindowTitle(nomClient);
-
+  
   // Recuperation de l'identifiant de la file de messages
   fprintf(stderr, "(CLIENT %s %d) Recuperation de l'id de la file de messages\n", nomClient, getpid());
   // TO DO (etape 2)
 
   if ((idQ = msgget(CLE, 0)) == -1)
+  {
     fprintf(stderr, "(CLIENT) Probleme lors de la connexion de la fille\n");
+    exit(0);
+  }
   else
     fprintf(stderr, "(CLIENT) la file à bien été trouver \n");
 
+
+
   // Envoi d'une requete d'identification
-  // TO DO (etape 5)
+  
+  requeteC.type = 1;
+  requeteC.expediteur = getpid();
+  fprintf(stderr, "(CLIENT) voici votre pid envoyer %d \n", requeteC.expediteur);
+
+  if ((msgsnd(idQ, &requeteC, sizeof(MESSAGE) - sizeof(long), 0)) == -1)
+    fprintf(stderr, "(CLIENT) Le message n'a pas pu étre envoyer\n");
+  else
+    fprintf(stderr, "(CLIENT) Le message a été envoyer avec succes\n");
+
 
   // Armement du signal SIGUSR1
-  //
   struct sigaction A;
 
   A.sa_handler = HandlerSIGUSR1;
@@ -51,10 +64,14 @@ WindowClient::WindowClient(QWidget *parent) : QMainWindow(parent), ui(new Ui::Wi
 
   if ((sigaction(SIGUSR1, &A, NULL)) == -1)
   {
-    perror("(CLIENT) Erreur lors de l'armement de SIGUSR1");
+    perror("(CLIENT) Erreur lors de l'armement de SIGUSR1\n");
     exit(1);
   }
+  printf("SIGNAL BIEN ARMER \n");
 }
+
+
+
 
 WindowClient::~WindowClient()
 {
@@ -130,9 +147,9 @@ void WindowClient::on_pushButtonQuitter_clicked()
 {
   fprintf(stderr, "Clic sur le bouton Quitter\n");
   if ((msgctl(idQ, IPC_RMID, &file)) == -1)
-    fprintf(stderr, "(CIENT) Le serveur N'A PAS bien été fermer");
+    fprintf(stderr, "(CIENT) Le serveur N'A PAS bien été fermer\n");
   else
-    fprintf(stderr, "(CIENT) Le serveur à bien été fermer");
+    fprintf(stderr, "(CIENT) Le serveur à bien été fermer\n");
   exit(1);
 }
 
@@ -156,4 +173,5 @@ void HandlerSIGUSR1(int sig)
     fprintf(stderr, "Message reçu de (type %ld) : %s vers %d\n", requeteC.type, requeteC.texte, requeteC.expediteur);
     w->setRecu(requeteC.texte);
   }
+  return;
 }
