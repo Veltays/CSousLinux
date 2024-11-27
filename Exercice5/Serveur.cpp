@@ -33,7 +33,7 @@ if ((sigaction(SIGINT, &B, NULL)) == -1)
     perror("(SERVEUR) Erreur lors de l'armement de SIGUSR1\n");
     exit(1);
   }
-  printf("SIGNAL BIEN ARMER \n");
+  printf("le signal à bien été armé \n");
 
   // Creation de la file de message
   fprintf(stderr, "(SERVEUR) Creation de la file de messages\n");
