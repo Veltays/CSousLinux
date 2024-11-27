@@ -11,8 +11,10 @@
 
 int idQ;
 int pid1, pid2;
+msqid_ds file;
 
 char *concatServeur(char *);
+void HandlerSIGINT(int sig);
 
 int main()
 {
@@ -20,7 +22,18 @@ int main()
   pid_t destinataire;
 
   // Armement du signal SIGINT
-  // TO DO (etape 6)
+  struct sigaction B;
+
+  B.sa_handler = HandlerSIGINT;
+  sigemptyset(&B.sa_mask);
+  B.sa_flags = 0;
+
+if ((sigaction(SIGINT, &B, NULL)) == -1)
+  {
+    perror("(SERVEUR) Erreur lors de l'armement de SIGUSR1\n");
+    exit(1);
+  }
+  printf("SIGNAL BIEN ARMER \n");
 
   // Creation de la file de message
   fprintf(stderr, "(SERVEUR) Creation de la file de messages\n");
@@ -29,8 +42,6 @@ int main()
     fprintf(stderr, "(SERVEUR) Probleme lors de la creation de la fille \n");
   else
     fprintf(stderr, "(SERVEUR) la fille à bien été créer \n\n");
-
-
 
   // Attente de connection de 2 clients
   fprintf(stderr, "(SERVEUR) Attente de connection d'un premier client...\n");
@@ -43,10 +54,7 @@ int main()
   pid2 = requete.expediteur;
   printf("PID DU 2e Client = %d ---------- \n", pid2);
 
-
-
   // Boucle while de renvoie de
-
 
   while (1)
   {
@@ -60,7 +68,7 @@ int main()
 
     printf("Message reçu (destination : %ld) : %s du processus avec le pid %d\n\n", requete.type, requete.texte, requete.expediteur);
 
-    if(requete.expediteur == pid1)
+    if (requete.expediteur == pid1)
     {
       fprintf(stderr, "(SERVEUR) Envoi de la reponse a %d\n", pid2); // envoie de le réponse
 
@@ -77,8 +85,8 @@ int main()
       fprintf(stderr, "(SERVEUR) Le message a été envoyer avec succes\n");
       kill(requete.type, SIGUSR1);
     }
-    
-    else if(requete.expediteur == pid2)
+
+    else if (requete.expediteur == pid2)
     {
       fprintf(stderr, "(SERVEUR) Envoi de la reponse a %d\n", pid1); // envoie de le réponse
 
@@ -92,11 +100,10 @@ int main()
         exit(1);
       }
 
-      fprintf(stderr, "(SERVEUR) Le message a été envoyer avec succes au %d\n",requete.type);
+      fprintf(stderr, "(SERVEUR) Le message a été envoyer avec succes au %d\n", requete.type);
 
       kill(pid1, SIGUSR1);
     }
-
   }
 }
 
@@ -112,4 +119,14 @@ char *concatServeur(char *texte)
   strcat(temp, texte);
   strcpy(texte, temp);
   return texte;
+}
+
+void HandlerSIGINT(int sig)
+{
+  fprintf(stderr, "CTRL C activé\n");
+  if ((msgctl(idQ, IPC_RMID, &file)) == -1)
+    fprintf(stderr, "(CIENT) Le serveur N'A PAS bien été fermer\n");
+  else
+    fprintf(stderr, "(CIENT) Le serveur à bien été fermer\n");
+  exit(0);
 }

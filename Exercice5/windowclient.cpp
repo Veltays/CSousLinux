@@ -5,10 +5,11 @@
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <unistd.h>
+
+
 
 extern WindowClient *w;
 
