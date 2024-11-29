@@ -147,11 +147,7 @@ void WindowClient::on_pushButtonEnvoyer_clicked()
 void WindowClient::on_pushButtonQuitter_clicked()
 {
   fprintf(stderr, "Clic sur le bouton Quitter\n");
-  if ((msgctl(idQ, IPC_RMID, &file)) == -1)
-    fprintf(stderr, "(CIENT) Le serveur N'A PAS bien été fermer\n");
-  else
-    fprintf(stderr, "(CIENT) Le serveur à bien été fermer\n");
-  exit(1);
+  fprintf(stderr, "(CIENT) Le serveur à bien été fermer\n");
 }
 
 
